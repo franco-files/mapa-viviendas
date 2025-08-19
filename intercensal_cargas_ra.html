@@ -1,0 +1,6652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargas de Trabajo por RA para la EIC2025</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    
+    <!-- MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" />
+    
+    <!-- Leaflet and MarkerCluster JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js"></script>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        #map {
+            flex: 1;
+            height: 100%;
+        }
+        
+        .sidebar {
+            width: 300px;
+            padding: 20px;
+            background-color: #f8f8f8;
+            overflow-y: auto;
+        }
+        
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            width: 100%;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .legend {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            line-height: 1.5;
+        }
+        
+        .legend-circle {
+            display: inline-block;
+            border-radius: 50%;
+            margin-right: 5px;
+            border: 1px solid #555;
+        }
+        
+        .status {
+            margin-top: 20px;
+            color: #27ae60;
+            font-size: 14px;
+        }
+        
+        /* Custom cluster styles */
+        .custom-cluster {
+            background-clip: padding-box;
+            border-radius: 50%;
+            text-align: center;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 0 0 2px rgba(0,0,0,0.5);
+        }
+        
+        /* Data table styles */
+        .data-table-container {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 6px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 11px;
+        }
+        
+        th {
+            background-color: #ecf0f1;
+            position: sticky;
+            top: 0;
+            font-weight: bold;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .filter-info {
+            background-color: #e8f4f8;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>Cargas de Trabajo por RA para la EIC2025</h1>
+            
+            <div class="form-group">
+                <label for="responsable-select">Responsable de Área:</label>
+                <select id="responsable-select">
+                    <option value="">Mostrar Todos</option>
+                    <option value="CM1_081211100">CM1_081211100</option>
+                    <option value="CM1_081211200">CM1_081211200</option>
+                    <option value="CM1_081211300">CM1_081211300</option>
+                    <option value="CM1_081211400">CM1_081211400</option>
+                    <option value="CM2_081212100">CM2_081212100</option>
+                    <option value="CM2_081212200">CM2_081212200</option>
+                    <option value="CM2_081212300">CM2_081212300</option>
+                    <option value="CM2_081212400">CM2_081212400</option>
+                    <option value="CM2_081212500">CM2_081212500</option>
+                    <option value="CM3_081213100">CM3_081213100</option>
+                    <option value="CM3_081213200">CM3_081213200</option>
+                    <option value="CM3_081213300">CM3_081213300</option>
+                    <option value="CM3_081213400">CM3_081213400</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="color-select">Color de Burbujas:</label>
+                <select id="color-select">
+                    <option value="#3498db">Azul</option>
+                    <option value="#e74c3c">Rojo</option>
+                    <option value="#2ecc71">Verde</option>
+                    <option value="#9b59b6">Morado</option>
+                    <option value="#f39c12">Naranja</option>
+                    <option value="#1abc9c">Verde Azulado</option>
+                    <option value="#34495e">Gris Oscuro</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="max-radius">Tamaño Máximo de Burbuja (px):</label>
+                <input type="number" id="max-radius" value="30" min="5" max="100">
+            </div>
+            
+            <button id="generate-map">Actualizar Mapa</button>
+            
+            <div id="status" class="status"></div>
+            
+            <div id="filter-info" class="filter-info hidden">
+                <!-- Filter information will be displayed here -->
+            </div>
+            
+            <div class="form-group">
+                <button id="toggle-data">Mostrar/Ocultar Tabla de Datos</button>
+            </div>
+            
+            <div id="data-table-container" class="data-table-container hidden">
+                <table id="data-table">
+                    <thead>
+                        <tr>
+                            <!-- Table headers will be dynamically inserted -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Table rows will be dynamically inserted -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="map"></div>
+    </div>
+    
+    <script>
+        // =====================================================
+        // EMBEDDED DATA - REPLACE THIS WITH YOUR ACTUAL DATA
+        // =====================================================
+        const embeddedData = [
+            // Sample data - replace with your actual data from Excel
+            // Format: Each object represents one row of your data
+            {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350001",
+    "XCOORD": -108.1898,
+    "YCOORD": 30.8873,
+    "VIVIENDAS": 1051
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350004",
+    "XCOORD": -108.4955,
+    "YCOORD": 30.3544,
+    "VIVIENDAS": 52
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350009",
+    "XCOORD": -108.3833,
+    "YCOORD": 30.7642,
+    "VIVIENDAS": 9
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350012",
+    "XCOORD": -108.4232,
+    "YCOORD": 30.7178,
+    "VIVIENDAS": 105
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350016",
+    "XCOORD": -108.1518,
+    "YCOORD": 30.9989,
+    "VIVIENDAS": 31
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350017",
+    "XCOORD": -108.2962,
+    "YCOORD": 30.8261,
+    "VIVIENDAS": 172
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803500260801",
+    "XCOORD": -108.12744,
+    "YCOORD": 31.00795,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350027",
+    "XCOORD": -108.2847,
+    "YCOORD": 30.8506,
+    "VIVIENDAS": 136
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803500350801",
+    "XCOORD": -108.15483,
+    "YCOORD": 30.85776,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350036",
+    "XCOORD": -108.1587,
+    "YCOORD": 30.926,
+    "VIVIENDAS": 55
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350037",
+    "XCOORD": -108.4677,
+    "YCOORD": 30.5614,
+    "VIVIENDAS": 36
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803500380712",
+    "XCOORD": -108.58653,
+    "YCOORD": 31.17616,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803500410873",
+    "XCOORD": -108.53543,
+    "YCOORD": 30.77664,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350049",
+    "XCOORD": -108.6445,
+    "YCOORD": 30.8024,
+    "VIVIENDAS": 154
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350065",
+    "XCOORD": -108.4621,
+    "YCOORD": 30.7777,
+    "VIVIENDAS": 18
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350072",
+    "XCOORD": -108.7148,
+    "YCOORD": 30.9134,
+    "VIVIENDAS": 329
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350074",
+    "XCOORD": -108.3889,
+    "YCOORD": 30.8567,
+    "VIVIENDAS": 71
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803500750981",
+    "XCOORD": -108.46613,
+    "YCOORD": 30.60811,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350078084A",
+    "XCOORD": -108.74572,
+    "YCOORD": 30.85772,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803500860642",
+    "XCOORD": -108.47102,
+    "YCOORD": 31.27953,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803500900731",
+    "XCOORD": -108.33726,
+    "YCOORD": 31.10299,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803501000801",
+    "XCOORD": -108.32596,
+    "YCOORD": 30.77006,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803501041000",
+    "XCOORD": -108.3191,
+    "YCOORD": 30.55318,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803501090892",
+    "XCOORD": -108.29853,
+    "YCOORD": 30.86007,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803501350924",
+    "XCOORD": -108.54307,
+    "YCOORD": 30.69882,
+    "VIVIENDAS": 8
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803501370888",
+    "XCOORD": -108.42698,
+    "YCOORD": 30.83808,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803501570801",
+    "XCOORD": -108.17348,
+    "YCOORD": 30.90831,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803501990996",
+    "XCOORD": -108.49238,
+    "YCOORD": 30.45758,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502080801",
+    "XCOORD": -108.30249,
+    "YCOORD": 30.91787,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502260854",
+    "XCOORD": -108.5601,
+    "YCOORD": 30.92988,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502400801",
+    "XCOORD": -108.31621,
+    "YCOORD": 30.77791,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502540905",
+    "XCOORD": -108.40157,
+    "YCOORD": 30.74911,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502640801",
+    "XCOORD": -108.05753,
+    "YCOORD": 30.74051,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502730996",
+    "XCOORD": -108.45692,
+    "YCOORD": 30.47542,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502800801",
+    "XCOORD": -108.35464,
+    "YCOORD": 30.86465,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502871087",
+    "XCOORD": -108.57398,
+    "YCOORD": 30.26429,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350288",
+    "XCOORD": -107.9684,
+    "YCOORD": 30.7418,
+    "VIVIENDAS": 27
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803502961015",
+    "XCOORD": -108.5961,
+    "YCOORD": 30.39029,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503020801",
+    "XCOORD": -108.18167,
+    "YCOORD": 30.88216,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350308",
+    "XCOORD": -108.2398,
+    "YCOORD": 31.1488,
+    "VIVIENDAS": 19
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350309",
+    "XCOORD": -108.6094,
+    "YCOORD": 31.2653,
+    "VIVIENDAS": 47
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503130801",
+    "XCOORD": -108.18486,
+    "YCOORD": 30.88373,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503140801",
+    "XCOORD": -108.15727,
+    "YCOORD": 30.87983,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503150801",
+    "XCOORD": -108.15253,
+    "YCOORD": 30.87285,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350325084A",
+    "XCOORD": -108.68175,
+    "YCOORD": 30.7757,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503261015",
+    "XCOORD": -108.61069,
+    "YCOORD": 30.38502,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503330996",
+    "XCOORD": -108.46544,
+    "YCOORD": 30.59418,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503351087",
+    "XCOORD": -108.60365,
+    "YCOORD": 30.25239,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503451015",
+    "XCOORD": -108.48495,
+    "YCOORD": 30.39044,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503460996",
+    "XCOORD": -108.48022,
+    "YCOORD": 30.48109,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503570801",
+    "XCOORD": -108.16827,
+    "YCOORD": 30.87516,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503680801",
+    "XCOORD": -108.18023,
+    "YCOORD": 30.87832,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503690801",
+    "XCOORD": -108.18163,
+    "YCOORD": 30.86873,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503700962",
+    "XCOORD": -108.00006,
+    "YCOORD": 30.65611,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503750801",
+    "XCOORD": -108.26952,
+    "YCOORD": 30.91386,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503760801",
+    "XCOORD": -108.3569,
+    "YCOORD": 30.86511,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503800801",
+    "XCOORD": -108.02127,
+    "YCOORD": 31.02657,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503820892",
+    "XCOORD": -108.35525,
+    "YCOORD": 30.90335,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503830801",
+    "XCOORD": -108.08023,
+    "YCOORD": 30.7632,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503840801",
+    "XCOORD": -108.16379,
+    "YCOORD": 31.01482,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503860638",
+    "XCOORD": -108.54977,
+    "YCOORD": 31.28109,
+    "VIVIENDAS": 22
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803503890892",
+    "XCOORD": -108.27477,
+    "YCOORD": 30.85957,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350414",
+    "XCOORD": -108.1771,
+    "YCOORD": 31.1344,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350415",
+    "XCOORD": -108.1779,
+    "YCOORD": 31.1448,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350416",
+    "XCOORD": -108.1735,
+    "YCOORD": 31.1939,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350417",
+    "XCOORD": -108.1988,
+    "YCOORD": 31.1282,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350419",
+    "XCOORD": -108.1977,
+    "YCOORD": 31.1883,
+    "VIVIENDAS": 7
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350420",
+    "XCOORD": -108.2204,
+    "YCOORD": 31.1225,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350423",
+    "XCOORD": -108.2615,
+    "YCOORD": 31.1083,
+    "VIVIENDAS": 8
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350424",
+    "XCOORD": -108.2601,
+    "YCOORD": 31.1284,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350425",
+    "XCOORD": -108.2606,
+    "YCOORD": 31.1492,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350426",
+    "XCOORD": -108.2817,
+    "YCOORD": 31.105,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350429",
+    "XCOORD": -108.3021,
+    "YCOORD": 31.1022,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350431",
+    "XCOORD": -108.3833,
+    "YCOORD": 30.7844,
+    "VIVIENDAS": 13
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350432",
+    "XCOORD": -108.3776,
+    "YCOORD": 30.8205,
+    "VIVIENDAS": 22
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350433",
+    "XCOORD": -108.3775,
+    "YCOORD": 30.8508,
+    "VIVIENDAS": 35
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350434",
+    "XCOORD": -108.2865,
+    "YCOORD": 30.6512,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350438",
+    "XCOORD": -108.2527,
+    "YCOORD": 30.6245,
+    "VIVIENDAS": 20
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504390943",
+    "XCOORD": -108.24383,
+    "YCOORD": 30.60505,
+    "VIVIENDAS": 7
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504430854",
+    "XCOORD": -108.67238,
+    "YCOORD": 30.94213,
+    "VIVIENDAS": 22
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350445",
+    "XCOORD": -108.6533,
+    "YCOORD": 30.9161,
+    "VIVIENDAS": 23
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350446",
+    "XCOORD": -108.6329,
+    "YCOORD": 30.916,
+    "VIVIENDAS": 81
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504470854",
+    "XCOORD": -108.63311,
+    "YCOORD": 30.94414,
+    "VIVIENDAS": 28
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504510854",
+    "XCOORD": -108.5922,
+    "YCOORD": 30.94227,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504520854",
+    "XCOORD": -108.57195,
+    "YCOORD": 30.9402,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504550820",
+    "XCOORD": -108.67439,
+    "YCOORD": 30.99954,
+    "VIVIENDAS": 8
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504560820",
+    "XCOORD": -108.65264,
+    "YCOORD": 30.99661,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504570820",
+    "XCOORD": -108.65397,
+    "YCOORD": 30.96981,
+    "VIVIENDAS": 32
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504580820",
+    "XCOORD": -108.63294,
+    "YCOORD": 30.96409,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350464",
+    "XCOORD": -108.3793,
+    "YCOORD": 30.7963,
+    "VIVIENDAS": 84
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504680873",
+    "XCOORD": -108.59583,
+    "YCOORD": 30.86699,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350480",
+    "XCOORD": -108.3721,
+    "YCOORD": 30.7417,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504820801",
+    "XCOORD": -108.18823,
+    "YCOORD": 30.88463,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504830801",
+    "XCOORD": -108.16362,
+    "YCOORD": 30.8617,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504850801",
+    "XCOORD": -108.16573,
+    "YCOORD": 30.85142,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504870801",
+    "XCOORD": -108.15085,
+    "YCOORD": 30.9479,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504930801",
+    "XCOORD": -108.14437,
+    "YCOORD": 31.0299,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803504950801",
+    "XCOORD": -108.11463,
+    "YCOORD": 30.90242,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505000801",
+    "XCOORD": -108.15274,
+    "YCOORD": 31.02058,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505190676",
+    "XCOORD": -108.59013,
+    "YCOORD": 31.2063,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505240905",
+    "XCOORD": -108.44482,
+    "YCOORD": 30.68741,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505250784",
+    "XCOORD": -108.39811,
+    "YCOORD": 30.91645,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505270892",
+    "XCOORD": -108.32111,
+    "YCOORD": 30.88542,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350530",
+    "XCOORD": -108.2505,
+    "YCOORD": 31.1825,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505310801",
+    "XCOORD": -108.28928,
+    "YCOORD": 30.94767,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505320905",
+    "XCOORD": -108.44359,
+    "YCOORD": 30.69389,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505340801",
+    "XCOORD": -108.28853,
+    "YCOORD": 30.84211,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505350905",
+    "XCOORD": -108.4237,
+    "YCOORD": 30.75023,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505360905",
+    "XCOORD": -108.41107,
+    "YCOORD": 30.73939,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505370905",
+    "XCOORD": -108.40977,
+    "YCOORD": 30.72695,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505390905",
+    "XCOORD": -108.41298,
+    "YCOORD": 30.73177,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505410801",
+    "XCOORD": -108.32669,
+    "YCOORD": 30.76694,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505420905",
+    "XCOORD": -108.40616,
+    "YCOORD": 30.74305,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505430869",
+    "XCOORD": -108.66873,
+    "YCOORD": 30.81916,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505440905",
+    "XCOORD": -108.31537,
+    "YCOORD": 30.71595,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "0803505450892",
+    "XCOORD": -108.39466,
+    "YCOORD": 30.8962,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211100",
+    "LOCALIDAD": "080350546",
+    "XCOORD": -108.53097,
+    "YCOORD": 31.25829,
+    "VIVIENDAS": 12
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130001",
+    "XCOORD": -107.9488,
+    "YCOORD": 30.3757,
+    "VIVIENDAS": 2096
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130007",
+    "XCOORD": -108.0525,
+    "YCOORD": 30.2831,
+    "VIVIENDAS": 42
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130009072A",
+    "XCOORD": -108.54015,
+    "YCOORD": 30.04683,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130016",
+    "XCOORD": -108.328,
+    "YCOORD": 30.1845,
+    "VIVIENDAS": 62
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130017",
+    "XCOORD": -108.077,
+    "YCOORD": 30.3093,
+    "VIVIENDAS": 212
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130018",
+    "XCOORD": -108.022,
+    "YCOORD": 30.1804,
+    "VIVIENDAS": 303
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801300210607",
+    "XCOORD": -108.04103,
+    "YCOORD": 30.29459,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801300220645",
+    "XCOORD": -108.17405,
+    "YCOORD": 30.33159,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801300240630",
+    "XCOORD": -108.30809,
+    "YCOORD": 30.26269,
+    "VIVIENDAS": 9
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130025",
+    "XCOORD": -108.3443,
+    "YCOORD": 30.0872,
+    "VIVIENDAS": 11
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130028",
+    "XCOORD": -108.0103,
+    "YCOORD": 30.2441,
+    "VIVIENDAS": 45
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130029",
+    "XCOORD": -107.9545,
+    "YCOORD": 30.4414,
+    "VIVIENDAS": 73
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130030",
+    "XCOORD": -108.0408,
+    "YCOORD": 30.1163,
+    "VIVIENDAS": 14
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130032",
+    "XCOORD": -108.3645,
+    "YCOORD": 30.265,
+    "VIVIENDAS": 42
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130034",
+    "XCOORD": -108.3364,
+    "YCOORD": 29.975,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130035",
+    "XCOORD": -108.2901,
+    "YCOORD": 30.0466,
+    "VIVIENDAS": 63
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130039",
+    "XCOORD": -108.209,
+    "YCOORD": 30.3963,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801300470749",
+    "XCOORD": -108.22796,
+    "YCOORD": 30.07872,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130049",
+    "XCOORD": -107.9477,
+    "YCOORD": 30.0796,
+    "VIVIENDAS": 9
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130055",
+    "XCOORD": -108.0591,
+    "YCOORD": 29.8291,
+    "VIVIENDAS": 25
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130056",
+    "XCOORD": -108.5588,
+    "YCOORD": 30.1584,
+    "VIVIENDAS": 24
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130060",
+    "XCOORD": -108.0456,
+    "YCOORD": 30.0576,
+    "VIVIENDAS": 39
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130080",
+    "XCOORD": -108.4081,
+    "YCOORD": 30.3076,
+    "VIVIENDAS": 22
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801301030611",
+    "XCOORD": -108.26636,
+    "YCOORD": 30.38354,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801301490819",
+    "XCOORD": -108.00348,
+    "YCOORD": 29.90332,
+    "VIVIENDAS": 21
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801301780804",
+    "XCOORD": -108.2115,
+    "YCOORD": 29.80966,
+    "VIVIENDAS": 10
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801301920607",
+    "XCOORD": -107.96674,
+    "YCOORD": 30.40505,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801301930607",
+    "XCOORD": -107.9595,
+    "YCOORD": 30.45431,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302000645",
+    "XCOORD": -108.12421,
+    "YCOORD": 30.3386,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302010607",
+    "XCOORD": -107.94539,
+    "YCOORD": 30.3557,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130203",
+    "XCOORD": -108.1058,
+    "YCOORD": 30.3282,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302070607",
+    "XCOORD": -108.06427,
+    "YCOORD": 30.3387,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302100607",
+    "XCOORD": -107.9389,
+    "YCOORD": 30.37471,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302110607",
+    "XCOORD": -107.93719,
+    "YCOORD": 30.39673,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302160607",
+    "XCOORD": -108.09837,
+    "YCOORD": 30.35933,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130221",
+    "XCOORD": -107.936,
+    "YCOORD": 30.5149,
+    "VIVIENDAS": 24
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302290607",
+    "XCOORD": -108.0489,
+    "YCOORD": 30.32547,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302350607",
+    "XCOORD": -108.11332,
+    "YCOORD": 30.33049,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302480607",
+    "XCOORD": -107.93991,
+    "YCOORD": 30.35994,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302540607",
+    "XCOORD": -107.94225,
+    "YCOORD": 30.36232,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302940607",
+    "XCOORD": -108.06286,
+    "YCOORD": 30.33334,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302950607",
+    "XCOORD": -108.06352,
+    "YCOORD": 30.3238,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801302970607",
+    "XCOORD": -108.07295,
+    "YCOORD": 30.32372,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303030607",
+    "XCOORD": -108.08169,
+    "YCOORD": 30.36043,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303040607",
+    "XCOORD": -108.08907,
+    "YCOORD": 30.35992,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303050607",
+    "XCOORD": -108.05859,
+    "YCOORD": 30.32883,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303100698",
+    "XCOORD": -108.48925,
+    "YCOORD": 30.1399,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130319",
+    "XCOORD": -108.0147,
+    "YCOORD": 30.2005,
+    "VIVIENDAS": 52
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303210611",
+    "XCOORD": -108.12932,
+    "YCOORD": 30.3403,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "080130322",
+    "XCOORD": -108.0287,
+    "YCOORD": 30.2573,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303350698",
+    "XCOORD": -108.49327,
+    "YCOORD": 30.10422,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303580607",
+    "XCOORD": -108.09318,
+    "YCOORD": 30.32534,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303700607",
+    "XCOORD": -108.08961,
+    "YCOORD": 30.31645,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303720683",
+    "XCOORD": -108.02959,
+    "YCOORD": 30.13536,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303830607",
+    "XCOORD": -107.96344,
+    "YCOORD": 30.40424,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303910607",
+    "XCOORD": -107.9409,
+    "YCOORD": 30.39086,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801303980607",
+    "XCOORD": -107.94333,
+    "YCOORD": 30.40268,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304000607",
+    "XCOORD": -107.97829,
+    "YCOORD": 30.40241,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304060607",
+    "XCOORD": -107.96854,
+    "YCOORD": 30.3999,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304070607",
+    "XCOORD": -107.97439,
+    "YCOORD": 30.39934,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304100607",
+    "XCOORD": -107.96834,
+    "YCOORD": 30.40476,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304180607",
+    "XCOORD": -107.94853,
+    "YCOORD": 30.36024,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304190607",
+    "XCOORD": -107.95914,
+    "YCOORD": 30.36661,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304420607",
+    "XCOORD": -108.03874,
+    "YCOORD": 30.26797,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304450683",
+    "XCOORD": -108.01972,
+    "YCOORD": 30.19703,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304470683",
+    "XCOORD": -108.02887,
+    "YCOORD": 30.15567,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304770607",
+    "XCOORD": -108.02527,
+    "YCOORD": 30.26639,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304780607",
+    "XCOORD": -107.95867,
+    "YCOORD": 30.27325,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304820683",
+    "XCOORD": -108.02805,
+    "YCOORD": 30.16975,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304830683",
+    "XCOORD": -108.03562,
+    "YCOORD": 30.10035,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304840683",
+    "XCOORD": -108.02339,
+    "YCOORD": 30.16769,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304860683",
+    "XCOORD": -108.11081,
+    "YCOORD": 30.1479,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304900683",
+    "XCOORD": -108.03958,
+    "YCOORD": 30.06961,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304950607",
+    "XCOORD": -107.95863,
+    "YCOORD": 30.40073,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304960607",
+    "XCOORD": -107.95964,
+    "YCOORD": 30.40099,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304970607",
+    "XCOORD": -107.96137,
+    "YCOORD": 30.403,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801304980607",
+    "XCOORD": -107.96608,
+    "YCOORD": 30.40199,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801305020607",
+    "XCOORD": -107.96497,
+    "YCOORD": 30.40256,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801305030607",
+    "XCOORD": -107.95887,
+    "YCOORD": 30.44612,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801305060679",
+    "XCOORD": -108.25831,
+    "YCOORD": 30.1787,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801305070700",
+    "XCOORD": -108.32806,
+    "YCOORD": 30.1235,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801305100607",
+    "XCOORD": -108.08554,
+    "YCOORD": 30.32185,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801305220607",
+    "XCOORD": -108.07046,
+    "YCOORD": 30.29186,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211200",
+    "LOCALIDAD": "0801305240607",
+    "XCOORD": -108.00453,
+    "YCOORD": 30.23795,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080130014",
+    "XCOORD": -107.9357,
+    "YCOORD": 30.5666,
+    "VIVIENDAS": 130
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080130036",
+    "XCOORD": -108.0106,
+    "YCOORD": 30.6377,
+    "VIVIENDAS": 41
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801301680575",
+    "XCOORD": -107.98649,
+    "YCOORD": 30.53676,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801302380607",
+    "XCOORD": -107.94145,
+    "YCOORD": 30.46042,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801302610575",
+    "XCOORD": -107.97682,
+    "YCOORD": 30.52771,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801302630575",
+    "XCOORD": -107.97232,
+    "YCOORD": 30.52952,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801302710575",
+    "XCOORD": -107.92535,
+    "YCOORD": 30.58628,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080130311",
+    "XCOORD": -107.9606,
+    "YCOORD": 30.4869,
+    "VIVIENDAS": 232
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801303150607",
+    "XCOORD": -107.94974,
+    "YCOORD": 30.49257,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801303280607",
+    "XCOORD": -107.94976,
+    "YCOORD": 30.49864,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801303390607",
+    "XCOORD": -107.93703,
+    "YCOORD": 30.49491,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801303780575",
+    "XCOORD": -107.97648,
+    "YCOORD": 30.53879,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801303950607",
+    "XCOORD": -107.93193,
+    "YCOORD": 30.45915,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801304030607",
+    "XCOORD": -107.93533,
+    "YCOORD": 30.47433,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801304390607",
+    "XCOORD": -107.93653,
+    "YCOORD": 30.50839,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801305000607",
+    "XCOORD": -107.97772,
+    "YCOORD": 30.51564,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801305010607",
+    "XCOORD": -107.98881,
+    "YCOORD": 30.51315,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801305110575",
+    "XCOORD": -107.95645,
+    "YCOORD": 30.5381,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801305160607",
+    "XCOORD": -107.9457,
+    "YCOORD": 30.41845,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0801305170575",
+    "XCOORD": -107.93222,
+    "YCOORD": 30.54113,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500001",
+    "XCOORD": -107.9121,
+    "YCOORD": 30.414,
+    "VIVIENDAS": 1603
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805000040723",
+    "XCOORD": -107.92095,
+    "YCOORD": 30.77148,
+    "VIVIENDAS": 11
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500010",
+    "XCOORD": -107.9045,
+    "YCOORD": 30.4968,
+    "VIVIENDAS": 333
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500011",
+    "XCOORD": -107.8979,
+    "YCOORD": 30.5671,
+    "VIVIENDAS": 269
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500013",
+    "XCOORD": -107.8909,
+    "YCOORD": 30.6053,
+    "VIVIENDAS": 27
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805000320846",
+    "XCOORD": -107.53861,
+    "YCOORD": 30.49769,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500050",
+    "XCOORD": -107.9376,
+    "YCOORD": 30.7776,
+    "VIVIENDAS": 46
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500051",
+    "XCOORD": -107.9589,
+    "YCOORD": 30.7653,
+    "VIVIENDAS": 64
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500052",
+    "XCOORD": -107.957,
+    "YCOORD": 30.7467,
+    "VIVIENDAS": 37
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500053",
+    "XCOORD": -107.9367,
+    "YCOORD": 30.7456,
+    "VIVIENDAS": 14
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500054",
+    "XCOORD": -107.9094,
+    "YCOORD": 30.7458,
+    "VIVIENDAS": 19
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500055",
+    "XCOORD": -107.9184,
+    "YCOORD": 30.7207,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500056",
+    "XCOORD": -107.9341,
+    "YCOORD": 30.7277,
+    "VIVIENDAS": 20
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500057",
+    "XCOORD": -107.9175,
+    "YCOORD": 30.7025,
+    "VIVIENDAS": 21
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500058",
+    "XCOORD": -107.9284,
+    "YCOORD": 30.6842,
+    "VIVIENDAS": 10
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805000770812",
+    "XCOORD": -107.85169,
+    "YCOORD": 30.4561,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001220808",
+    "XCOORD": -107.89514,
+    "YCOORD": 30.59149,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001230808",
+    "XCOORD": -107.89558,
+    "YCOORD": 30.57509,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001350812",
+    "XCOORD": -107.84339,
+    "YCOORD": 30.45827,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001390812",
+    "XCOORD": -107.86549,
+    "YCOORD": 30.46092,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001690812",
+    "XCOORD": -107.88241,
+    "YCOORD": 30.41897,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001700812",
+    "XCOORD": -107.88529,
+    "YCOORD": 30.44607,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001710812",
+    "XCOORD": -107.85633,
+    "YCOORD": 30.46235,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001720812",
+    "XCOORD": -107.87012,
+    "YCOORD": 30.41034,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001860992",
+    "XCOORD": -107.96073,
+    "YCOORD": 30.79907,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001870992",
+    "XCOORD": -107.95511,
+    "YCOORD": 30.78386,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001880992",
+    "XCOORD": -107.86481,
+    "YCOORD": 30.78872,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805001910812",
+    "XCOORD": -107.92229,
+    "YCOORD": 30.46171,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002140812",
+    "XCOORD": -107.8721,
+    "YCOORD": 30.4155,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002230812",
+    "XCOORD": -107.94112,
+    "YCOORD": 30.41607,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002250812",
+    "XCOORD": -107.86288,
+    "YCOORD": 30.47303,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002310812",
+    "XCOORD": -107.93262,
+    "YCOORD": 30.43013,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002330812",
+    "XCOORD": -107.93194,
+    "YCOORD": 30.41361,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002380812",
+    "XCOORD": -107.87826,
+    "YCOORD": 30.4665,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002410812",
+    "XCOORD": -107.93467,
+    "YCOORD": 30.44321,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002460812",
+    "XCOORD": -107.92719,
+    "YCOORD": 30.46475,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002540812",
+    "XCOORD": -107.888,
+    "YCOORD": 30.42374,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002550812",
+    "XCOORD": -107.8943,
+    "YCOORD": 30.42015,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002560812",
+    "XCOORD": -107.9321,
+    "YCOORD": 30.43596,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002570812",
+    "XCOORD": -107.93806,
+    "YCOORD": 30.42182,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002580812",
+    "XCOORD": -107.92869,
+    "YCOORD": 30.4134,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "080500263",
+    "XCOORD": -107.88959,
+    "YCOORD": 30.72472,
+    "VIVIENDAS": 18
+  },
+  {
+    "CLAVE": "CM1_081211300",
+    "LOCALIDAD": "0805002760865",
+    "XCOORD": -107.6231,
+    "YCOORD": 30.3722,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "080500001",
+    "XCOORD": -107.9121,
+    "YCOORD": 30.414,
+    "VIVIENDAS": 3427
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "080500003",
+    "XCOORD": -107.9241,
+    "YCOORD": 30.3637,
+    "VIVIENDAS": 272
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "080500008",
+    "XCOORD": -107.9359,
+    "YCOORD": 30.3317,
+    "VIVIENDAS": 25
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "080500012",
+    "XCOORD": -107.9479,
+    "YCOORD": 30.289,
+    "VIVIENDAS": 206
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001080812",
+    "XCOORD": -107.92839,
+    "YCOORD": 30.37777,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001100899",
+    "XCOORD": -107.8695,
+    "YCOORD": 30.16071,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001280899",
+    "XCOORD": -107.75017,
+    "YCOORD": 30.2423,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001290812",
+    "XCOORD": -107.92723,
+    "YCOORD": 30.39429,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001360812",
+    "XCOORD": -107.91613,
+    "YCOORD": 30.35547,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001380812",
+    "XCOORD": -107.93203,
+    "YCOORD": 30.38662,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001640812",
+    "XCOORD": -107.93924,
+    "YCOORD": 30.30879,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001680812",
+    "XCOORD": -107.91242,
+    "YCOORD": 30.3664,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001940812",
+    "XCOORD": -107.93877,
+    "YCOORD": 30.2989,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805001960812",
+    "XCOORD": -107.93116,
+    "YCOORD": 30.34553,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "080500198",
+    "XCOORD": -107.9282,
+    "YCOORD": 30.3567,
+    "VIVIENDAS": 11
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002010812",
+    "XCOORD": -107.91863,
+    "YCOORD": 30.36737,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002020812",
+    "XCOORD": -107.91233,
+    "YCOORD": 30.37066,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002040812",
+    "XCOORD": -107.8673,
+    "YCOORD": 30.40352,
+    "VIVIENDAS": 41
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002050812",
+    "XCOORD": -107.9232,
+    "YCOORD": 30.38676,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002080812",
+    "XCOORD": -107.92583,
+    "YCOORD": 30.37083,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002240812",
+    "XCOORD": -107.93021,
+    "YCOORD": 30.35257,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002260812",
+    "XCOORD": -107.93893,
+    "YCOORD": 30.30636,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002270812",
+    "XCOORD": -107.94486,
+    "YCOORD": 30.32048,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002300812",
+    "XCOORD": -107.94171,
+    "YCOORD": 30.31981,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002320812",
+    "XCOORD": -107.94494,
+    "YCOORD": 30.32234,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002340812",
+    "XCOORD": -107.94265,
+    "YCOORD": 30.3248,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002600812",
+    "XCOORD": -107.93122,
+    "YCOORD": 30.34992,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002610812",
+    "XCOORD": -107.93598,
+    "YCOORD": 30.32753,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM1_081211400",
+    "LOCALIDAD": "0805002620812",
+    "XCOORD": -107.93862,
+    "YCOORD": 30.32691,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050001",
+    "XCOORD": -107.9959,
+    "YCOORD": 31.0922,
+    "VIVIENDAS": 2871
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050034",
+    "XCOORD": -107.7377,
+    "YCOORD": 31.5337,
+    "VIVIENDAS": 327
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050050143A",
+    "XCOORD": -108.16641,
+    "YCOORD": 31.6396,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800500571980",
+    "XCOORD": -107.98377,
+    "YCOORD": 31.10308,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050064",
+    "XCOORD": -107.9072,
+    "YCOORD": 31.0229,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800500802194",
+    "XCOORD": -107.45871,
+    "YCOORD": 30.92224,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800500862283",
+    "XCOORD": -107.52552,
+    "YCOORD": 30.79588,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800500902245",
+    "XCOORD": -107.40686,
+    "YCOORD": 30.77177,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050105",
+    "XCOORD": -107.9116,
+    "YCOORD": 31.7822,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800501261497",
+    "XCOORD": -107.9827,
+    "YCOORD": 31.4488,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800501681590",
+    "XCOORD": -108.01024,
+    "YCOORD": 31.36105,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050222",
+    "XCOORD": -107.4972,
+    "YCOORD": 30.9615,
+    "VIVIENDAS": 28
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800502282230",
+    "XCOORD": -107.65465,
+    "YCOORD": 30.91073,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050238",
+    "XCOORD": -107.2387,
+    "YCOORD": 30.8069,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800502991995",
+    "XCOORD": -107.7692,
+    "YCOORD": 31.0286,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800503201980",
+    "XCOORD": -108.02154,
+    "YCOORD": 31.08296,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800503241980",
+    "XCOORD": -108.04058,
+    "YCOORD": 31.0606,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800503371980",
+    "XCOORD": -108.03328,
+    "YCOORD": 31.07054,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800503891514",
+    "XCOORD": -107.63649,
+    "YCOORD": 31.51984,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800504081514",
+    "XCOORD": -107.62911,
+    "YCOORD": 31.50972,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050431",
+    "XCOORD": -108.1672,
+    "YCOORD": 31.4719,
+    "VIVIENDAS": 52
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800504561567",
+    "XCOORD": -107.69641,
+    "YCOORD": 31.45983,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800504701726",
+    "XCOORD": -108.01619,
+    "YCOORD": 31.23954,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800504981980",
+    "XCOORD": -108.03514,
+    "YCOORD": 31.11276,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800505131904",
+    "XCOORD": -108.0144,
+    "YCOORD": 31.13609,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800505661980",
+    "XCOORD": -108.0591,
+    "YCOORD": 31.05325,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800505811980",
+    "XCOORD": -107.86575,
+    "YCOORD": 31.00756,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800506011980",
+    "XCOORD": -107.94983,
+    "YCOORD": 31.11164,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800508191834",
+    "XCOORD": -108.03459,
+    "YCOORD": 31.22936,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800508611980",
+    "XCOORD": -107.98684,
+    "YCOORD": 31.10582,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800509041980",
+    "XCOORD": -108.05055,
+    "YCOORD": 31.09385,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800509131980",
+    "XCOORD": -108.00321,
+    "YCOORD": 31.05456,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080050917",
+    "XCOORD": -107.9161,
+    "YCOORD": 31.1834,
+    "VIVIENDAS": 9
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800509451980",
+    "XCOORD": -107.84228,
+    "YCOORD": 31.01831,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800509681980",
+    "XCOORD": -107.9443,
+    "YCOORD": 31.10686,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051017",
+    "XCOORD": -107.4733,
+    "YCOORD": 30.8959,
+    "VIVIENDAS": 22
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051018",
+    "XCOORD": -107.4529,
+    "YCOORD": 30.8918,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051019",
+    "XCOORD": -107.432,
+    "YCOORD": 30.8886,
+    "VIVIENDAS": 21
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051020",
+    "XCOORD": -107.4112,
+    "YCOORD": 30.9,
+    "VIVIENDAS": 18
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051021",
+    "XCOORD": -107.4228,
+    "YCOORD": 30.892,
+    "VIVIENDAS": 19
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051022",
+    "XCOORD": -107.3902,
+    "YCOORD": 30.8895,
+    "VIVIENDAS": 24
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051023",
+    "XCOORD": -107.3791,
+    "YCOORD": 30.8944,
+    "VIVIENDAS": 8
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051024",
+    "XCOORD": -107.4083,
+    "YCOORD": 30.9269,
+    "VIVIENDAS": 30
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800510341514",
+    "XCOORD": -107.63941,
+    "YCOORD": 31.51434,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800510391980",
+    "XCOORD": -107.86068,
+    "YCOORD": 31.01794,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800510481980",
+    "XCOORD": -107.93194,
+    "YCOORD": 31.08982,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051091",
+    "XCOORD": -108.0166,
+    "YCOORD": 31.2509,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800510951980",
+    "XCOORD": -107.95746,
+    "YCOORD": 31.10098,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800510971980",
+    "XCOORD": -108.01753,
+    "YCOORD": 31.0782,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800510992194",
+    "XCOORD": -107.45438,
+    "YCOORD": 30.92344,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800511091980",
+    "XCOORD": -108.00581,
+    "YCOORD": 31.00844,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800511211904",
+    "XCOORD": -107.9894,
+    "YCOORD": 31.11879,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800511321355",
+    "XCOORD": -108.14472,
+    "YCOORD": 31.77386,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051134143A",
+    "XCOORD": -108.1524,
+    "YCOORD": 31.59885,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "080051136",
+    "XCOORD": -108.1884,
+    "YCOORD": 31.4061,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800511471618",
+    "XCOORD": -107.76413,
+    "YCOORD": 31.37948,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800511581980",
+    "XCOORD": -107.82178,
+    "YCOORD": 31.0331,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800511771463",
+    "XCOORD": -107.70864,
+    "YCOORD": 31.55459,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800511791980",
+    "XCOORD": -108.04284,
+    "YCOORD": 31.08092,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800511951980",
+    "XCOORD": -108.07505,
+    "YCOORD": 31.07976,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512181834",
+    "XCOORD": -108.01021,
+    "YCOORD": 31.1495,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512221904",
+    "XCOORD": -108.03869,
+    "YCOORD": 31.13807,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512241980",
+    "XCOORD": -107.96844,
+    "YCOORD": 31.05966,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512511463",
+    "XCOORD": -107.66943,
+    "YCOORD": 31.5637,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512541514",
+    "XCOORD": -107.64187,
+    "YCOORD": 31.53468,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512551514",
+    "XCOORD": -107.71731,
+    "YCOORD": 31.51127,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512561514",
+    "XCOORD": -107.72428,
+    "YCOORD": 31.50249,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512591834",
+    "XCOORD": -108.05558,
+    "YCOORD": 31.22812,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512651980",
+    "XCOORD": -108.05265,
+    "YCOORD": 31.10884,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512671980",
+    "XCOORD": -107.97404,
+    "YCOORD": 31.14172,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212100",
+    "LOCALIDAD": "0800512701980",
+    "XCOORD": -107.96721,
+    "YCOORD": 31.12358,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800500561660",
+    "XCOORD": -107.52949,
+    "YCOORD": 31.31421,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080050068",
+    "XCOORD": -107.6281,
+    "YCOORD": 31.783,
+    "VIVIENDAS": 1497
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080050148",
+    "XCOORD": -107.61,
+    "YCOORD": 31.5111,
+    "VIVIENDAS": 88
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800501631425",
+    "XCOORD": -107.30214,
+    "YCOORD": 31.47884,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800501641675",
+    "XCOORD": -107.23791,
+    "YCOORD": 31.38716,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800501731764",
+    "XCOORD": -107.66165,
+    "YCOORD": 31.23676,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800501771656",
+    "XCOORD": -107.33148,
+    "YCOORD": 31.36503,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800501811694",
+    "XCOORD": -107.01695,
+    "YCOORD": 31.34294,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080050245",
+    "XCOORD": -107.726,
+    "YCOORD": 31.5657,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080050424",
+    "XCOORD": -107.6086,
+    "YCOORD": 31.4683,
+    "VIVIENDAS": 214
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080050479",
+    "XCOORD": -107.5791,
+    "YCOORD": 31.2302,
+    "VIVIENDAS": 92
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800508042033",
+    "XCOORD": -107.27874,
+    "YCOORD": 31.16223,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800509291425",
+    "XCOORD": -106.80767,
+    "YCOORD": 31.60213,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800509721425",
+    "XCOORD": -107.03984,
+    "YCOORD": 31.46405,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800509831425",
+    "XCOORD": -107.0934,
+    "YCOORD": 31.63884,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800509871425",
+    "XCOORD": -106.80683,
+    "YCOORD": 31.44702,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800509891425",
+    "XCOORD": -107.25339,
+    "YCOORD": 31.44783,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800510011514",
+    "XCOORD": -107.59255,
+    "YCOORD": 31.57324,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800510121463",
+    "XCOORD": -107.62046,
+    "YCOORD": 31.56944,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800510561482",
+    "XCOORD": -107.25946,
+    "YCOORD": 31.60868,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800511521529",
+    "XCOORD": -107.58147,
+    "YCOORD": 31.47815,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800511541529",
+    "XCOORD": -107.43989,
+    "YCOORD": 31.50281,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800511871529",
+    "XCOORD": -107.5788,
+    "YCOORD": 31.47761,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512311571",
+    "XCOORD": -107.41311,
+    "YCOORD": 31.40271,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512381406",
+    "XCOORD": -107.57375,
+    "YCOORD": 31.66927,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512461571",
+    "XCOORD": -107.4403,
+    "YCOORD": 31.44494,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512471410",
+    "XCOORD": -107.3176,
+    "YCOORD": 31.68858,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512481637",
+    "XCOORD": -107.57367,
+    "YCOORD": 31.39362,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512501463",
+    "XCOORD": -107.62178,
+    "YCOORD": 31.6347,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512521478",
+    "XCOORD": -107.61486,
+    "YCOORD": 31.70289,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512661529",
+    "XCOORD": -107.47142,
+    "YCOORD": 31.51084,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512681529",
+    "XCOORD": -107.47042,
+    "YCOORD": 31.50403,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512721571",
+    "XCOORD": -107.43054,
+    "YCOORD": 31.45983,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512731637",
+    "XCOORD": -107.57706,
+    "YCOORD": 31.38419,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0800512751571",
+    "XCOORD": -107.44037,
+    "YCOORD": 31.48423,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080370001",
+    "XCOORD": -106.485,
+    "YCOORD": 31.7465,
+    "VIVIENDAS": 1190
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080370654",
+    "XCOORD": -106.5847,
+    "YCOORD": 31.7723,
+    "VIVIENDAS": 204
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080370667304A",
+    "XCOORD": -106.67327,
+    "YCOORD": 31.57068,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080370830304A",
+    "XCOORD": -106.69397,
+    "YCOORD": 31.64385,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803708603054",
+    "XCOORD": -106.57821,
+    "YCOORD": 31.57341,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803708673054",
+    "XCOORD": -106.58587,
+    "YCOORD": 31.6111,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803708723054",
+    "XCOORD": -106.56109,
+    "YCOORD": 31.62088,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803708853054",
+    "XCOORD": -106.56124,
+    "YCOORD": 31.61568,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803708923054",
+    "XCOORD": -106.5943,
+    "YCOORD": 31.59711,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803709143054",
+    "XCOORD": -106.53833,
+    "YCOORD": 31.57406,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803709223054",
+    "XCOORD": -106.50907,
+    "YCOORD": 31.61803,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803709343054",
+    "XCOORD": -106.60128,
+    "YCOORD": 31.60808,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803709903054",
+    "XCOORD": -106.62001,
+    "YCOORD": 31.61252,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803709963054",
+    "XCOORD": -106.50714,
+    "YCOORD": 31.62414,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803710093069",
+    "XCOORD": -106.64563,
+    "YCOORD": 31.54147,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803710103054",
+    "XCOORD": -106.51,
+    "YCOORD": 31.61605,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080371014",
+    "XCOORD": -106.4735,
+    "YCOORD": 31.5667,
+    "VIVIENDAS": 26
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803710713020",
+    "XCOORD": -106.56577,
+    "YCOORD": 31.71231,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803710763054",
+    "XCOORD": -106.63645,
+    "YCOORD": 31.62064,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803710773054",
+    "XCOORD": -106.64985,
+    "YCOORD": 31.56627,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803710783054",
+    "XCOORD": -106.61518,
+    "YCOORD": 31.60225,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803710813054",
+    "XCOORD": -106.62575,
+    "YCOORD": 31.60587,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080371094",
+    "XCOORD": -106.4924,
+    "YCOORD": 31.6354,
+    "VIVIENDAS": 27
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "080371140",
+    "XCOORD": -106.5369,
+    "YCOORD": 31.6216,
+    "VIVIENDAS": 121
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803711463054",
+    "XCOORD": -106.55586,
+    "YCOORD": 31.58505,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803711533054",
+    "XCOORD": -106.54807,
+    "YCOORD": 31.62782,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803711603054",
+    "XCOORD": -106.50836,
+    "YCOORD": 31.6187,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803711723054",
+    "XCOORD": -106.57865,
+    "YCOORD": 31.56837,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212200",
+    "LOCALIDAD": "0803712263054",
+    "XCOORD": -106.61328,
+    "YCOORD": 31.64402,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212300",
+    "LOCALIDAD": "080370001",
+    "XCOORD": -106.485,
+    "YCOORD": 31.7465,
+    "VIVIENDAS": 4216
+  },
+  {
+    "CLAVE": "CM2_081212300",
+    "LOCALIDAD": "0803711513092",
+    "XCOORD": -106.35983,
+    "YCOORD": 31.52174,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212300",
+    "LOCALIDAD": "0803711743092",
+    "XCOORD": -106.3334,
+    "YCOORD": 31.55888,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080280016",
+    "XCOORD": -106.1414,
+    "YCOORD": 31.4252,
+    "VIVIENDAS": 369
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080280020",
+    "XCOORD": -106.1698,
+    "YCOORD": 31.4419,
+    "VIVIENDAS": 229
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802803780633",
+    "XCOORD": -106.25833,
+    "YCOORD": 31.39097,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802804281063",
+    "XCOORD": -106.16245,
+    "YCOORD": 31.43409,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802804301063",
+    "XCOORD": -106.13565,
+    "YCOORD": 31.42044,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805601063",
+    "XCOORD": -106.14963,
+    "YCOORD": 31.4165,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805711063",
+    "XCOORD": -106.1755,
+    "YCOORD": 31.43215,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805721063",
+    "XCOORD": -106.16735,
+    "YCOORD": 31.4278,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805731063",
+    "XCOORD": -106.16172,
+    "YCOORD": 31.43169,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805741063",
+    "XCOORD": -106.15454,
+    "YCOORD": 31.42586,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805891063",
+    "XCOORD": -106.15731,
+    "YCOORD": 31.42734,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805901063",
+    "XCOORD": -106.18059,
+    "YCOORD": 31.44775,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805911063",
+    "XCOORD": -106.14763,
+    "YCOORD": 31.42535,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0802805951063",
+    "XCOORD": -106.16014,
+    "YCOORD": 31.43397,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080370613",
+    "XCOORD": -106.2968,
+    "YCOORD": 31.582,
+    "VIVIENDAS": 963
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080370634",
+    "XCOORD": -106.2588,
+    "YCOORD": 31.5138,
+    "VIVIENDAS": 428
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080370635",
+    "XCOORD": -106.2811,
+    "YCOORD": 31.5466,
+    "VIVIENDAS": 644
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080370643",
+    "XCOORD": -106.2016,
+    "YCOORD": 31.4575,
+    "VIVIENDAS": 182
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080370712",
+    "XCOORD": -106.2375,
+    "YCOORD": 31.4928,
+    "VIVIENDAS": 138
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080370797",
+    "XCOORD": -106.2226,
+    "YCOORD": 31.4738,
+    "VIVIENDAS": 85
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080371065",
+    "XCOORD": -106.2908,
+    "YCOORD": 31.5645,
+    "VIVIENDAS": 31
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0803711233092",
+    "XCOORD": -106.29924,
+    "YCOORD": 31.52369,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0803711243092",
+    "XCOORD": -106.27361,
+    "YCOORD": 31.55253,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0803711253092",
+    "XCOORD": -106.27172,
+    "YCOORD": 31.54821,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0803711263092",
+    "XCOORD": -106.25795,
+    "YCOORD": 31.53816,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0803711273092",
+    "XCOORD": -106.2604,
+    "YCOORD": 31.53773,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0803711303092",
+    "XCOORD": -106.2596,
+    "YCOORD": 31.53191,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "080371138",
+    "XCOORD": -106.3008,
+    "YCOORD": 31.5276,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212400",
+    "LOCALIDAD": "0803711933092",
+    "XCOORD": -106.2711,
+    "YCOORD": 31.53483,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280001",
+    "XCOORD": -106.1018,
+    "YCOORD": 31.3901,
+    "VIVIENDAS": 1059
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802800021059",
+    "XCOORD": -105.4113,
+    "YCOORD": 30.43354,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280008",
+    "XCOORD": -105.0961,
+    "YCOORD": 30.7079,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280018",
+    "XCOORD": -105.769,
+    "YCOORD": 31.159,
+    "VIVIENDAS": 12
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280026",
+    "XCOORD": -106.0297,
+    "YCOORD": 31.3733,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280030",
+    "XCOORD": -106.0509,
+    "YCOORD": 31.3471,
+    "VIVIENDAS": 162
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280036",
+    "XCOORD": -105.8129,
+    "YCOORD": 31.2071,
+    "VIVIENDAS": 27
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802800561078",
+    "XCOORD": -106.07257,
+    "YCOORD": 31.38983,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280073103A",
+    "XCOORD": -104.93656,
+    "YCOORD": 30.59307,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280077",
+    "XCOORD": -105.4288,
+    "YCOORD": 30.8833,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802800860830",
+    "XCOORD": -105.6549,
+    "YCOORD": 30.83135,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802800970722",
+    "XCOORD": -105.88112,
+    "YCOORD": 31.1012,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802800981044",
+    "XCOORD": -105.2077,
+    "YCOORD": 30.41057,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280102",
+    "XCOORD": -105.0411,
+    "YCOORD": 30.6751,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802801040807",
+    "XCOORD": -105.88428,
+    "YCOORD": 30.87231,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280116085A",
+    "XCOORD": -105.49982,
+    "YCOORD": 30.95006,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802801581025",
+    "XCOORD": -105.2043,
+    "YCOORD": 30.53334,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802802151078",
+    "XCOORD": -106.04659,
+    "YCOORD": 31.37917,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280221",
+    "XCOORD": -106.1414,
+    "YCOORD": 31.4018,
+    "VIVIENDAS": 145
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802802550690",
+    "XCOORD": -105.80331,
+    "YCOORD": 31.18028,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802802801078",
+    "XCOORD": -106.05063,
+    "YCOORD": 31.37357,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802802811078",
+    "XCOORD": -106.05019,
+    "YCOORD": 31.37276,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802803151078",
+    "XCOORD": -106.04941,
+    "YCOORD": 31.38579,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802803221078",
+    "XCOORD": -106.03912,
+    "YCOORD": 31.36596,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802803391078",
+    "XCOORD": -106.02975,
+    "YCOORD": 31.3623,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802803401078",
+    "XCOORD": -106.04515,
+    "YCOORD": 31.37047,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280343",
+    "XCOORD": -105.887,
+    "YCOORD": 30.8552,
+    "VIVIENDAS": 18
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802803560898",
+    "XCOORD": -105.34931,
+    "YCOORD": 30.68718,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802803921078",
+    "XCOORD": -106.07613,
+    "YCOORD": 31.33966,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280411",
+    "XCOORD": -104.8779,
+    "YCOORD": 30.5012,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802804130864",
+    "XCOORD": -105.33935,
+    "YCOORD": 30.7994,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802804141010",
+    "XCOORD": -105.35471,
+    "YCOORD": 30.41327,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802804201063",
+    "XCOORD": -106.12526,
+    "YCOORD": 31.3957,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802804221063",
+    "XCOORD": -106.13836,
+    "YCOORD": 31.40728,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802804291078",
+    "XCOORD": -106.11277,
+    "YCOORD": 31.3296,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080280431078A",
+    "XCOORD": -105.52297,
+    "YCOORD": 30.97023,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802805550690",
+    "XCOORD": -105.82378,
+    "YCOORD": 31.20428,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802805671078",
+    "XCOORD": -106.02609,
+    "YCOORD": 31.3768,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802805701078",
+    "XCOORD": -106.04027,
+    "YCOORD": 31.38721,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802805831063",
+    "XCOORD": -106.12548,
+    "YCOORD": 31.41642,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802805841078",
+    "XCOORD": -106.06467,
+    "YCOORD": 31.34911,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0802805931078",
+    "XCOORD": -106.11144,
+    "YCOORD": 31.34075,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080530001",
+    "XCOORD": -106.0054,
+    "YCOORD": 31.3721,
+    "VIVIENDAS": 946
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080530002",
+    "XCOORD": -105.9628,
+    "YCOORD": 31.33,
+    "VIVIENDAS": 326
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805300030072",
+    "XCOORD": -105.98308,
+    "YCOORD": 31.33848,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080530005",
+    "XCOORD": -105.9128,
+    "YCOORD": 31.2939,
+    "VIVIENDAS": 69
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080530006",
+    "XCOORD": -105.8767,
+    "YCOORD": 31.2413,
+    "VIVIENDAS": 865
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080530007",
+    "XCOORD": -105.8932,
+    "YCOORD": 31.2803,
+    "VIVIENDAS": 33
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080530008",
+    "XCOORD": -105.9208,
+    "YCOORD": 31.2705,
+    "VIVIENDAS": 63
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805300160072",
+    "XCOORD": -105.99216,
+    "YCOORD": 31.33264,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805300250072",
+    "XCOORD": -106.01719,
+    "YCOORD": 31.33304,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805300380091",
+    "XCOORD": -105.89208,
+    "YCOORD": 31.25019,
+    "VIVIENDAS": 7
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805300860091",
+    "XCOORD": -105.94121,
+    "YCOORD": 31.29238,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805300980072",
+    "XCOORD": -105.99588,
+    "YCOORD": 31.36513,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805301720104",
+    "XCOORD": -105.9168,
+    "YCOORD": 31.30231,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805301770104",
+    "XCOORD": -105.85461,
+    "YCOORD": 31.22353,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080530179",
+    "XCOORD": -105.9247,
+    "YCOORD": 31.3035,
+    "VIVIENDAS": 51
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805301810072",
+    "XCOORD": -106.01429,
+    "YCOORD": 31.33678,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805301840072",
+    "XCOORD": -105.97739,
+    "YCOORD": 31.34117,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805301880072",
+    "XCOORD": -105.94044,
+    "YCOORD": 31.31503,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805301910072",
+    "XCOORD": -105.97079,
+    "YCOORD": 31.3174,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "080530194",
+    "XCOORD": -105.83,
+    "YCOORD": 31.2069,
+    "VIVIENDAS": 25
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805301970072",
+    "XCOORD": -106.01067,
+    "YCOORD": 31.37851,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302000104",
+    "XCOORD": -105.90995,
+    "YCOORD": 31.30352,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302020104",
+    "XCOORD": -105.90934,
+    "YCOORD": 31.28049,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302030104",
+    "XCOORD": -105.88047,
+    "YCOORD": 31.25183,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302140104",
+    "XCOORD": -105.86291,
+    "YCOORD": 31.12596,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302160091",
+    "XCOORD": -105.94587,
+    "YCOORD": 31.28868,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302190072",
+    "XCOORD": -106.00306,
+    "YCOORD": 31.37624,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302270072",
+    "XCOORD": -105.97744,
+    "YCOORD": 31.35884,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302280072",
+    "XCOORD": -105.98077,
+    "YCOORD": 31.35918,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302290072",
+    "XCOORD": -106.00176,
+    "YCOORD": 31.35625,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302310072",
+    "XCOORD": -106.00458,
+    "YCOORD": 31.34636,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302410072",
+    "XCOORD": -105.98592,
+    "YCOORD": 31.36145,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302470072",
+    "XCOORD": -105.99088,
+    "YCOORD": 31.31068,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM2_081212500",
+    "LOCALIDAD": "0805302520091",
+    "XCOORD": -105.93581,
+    "YCOORD": 31.29324,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080100025",
+    "XCOORD": -107.2863,
+    "YCOORD": 30.4387,
+    "VIVIENDAS": 20
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080100028",
+    "XCOORD": -107.5243,
+    "YCOORD": 29.9195,
+    "VIVIENDAS": 276
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080100043",
+    "XCOORD": -107.3059,
+    "YCOORD": 30.6185,
+    "VIVIENDAS": 36
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0801001561092",
+    "XCOORD": -107.22716,
+    "YCOORD": 30.44191,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080100167",
+    "XCOORD": -107.3826,
+    "YCOORD": 30.1896,
+    "VIVIENDAS": 84
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080100255111A",
+    "XCOORD": -107.36071,
+    "YCOORD": 30.40729,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080100264",
+    "XCOORD": -107.5339,
+    "YCOORD": 29.9444,
+    "VIVIENDAS": 35
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080100276",
+    "XCOORD": -107.3332,
+    "YCOORD": 30.0975,
+    "VIVIENDAS": 117
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0801003231251",
+    "XCOORD": -107.558,
+    "YCOORD": 29.95451,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0801003631251",
+    "XCOORD": -107.55667,
+    "YCOORD": 29.90634,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0801004941302",
+    "XCOORD": -107.52303,
+    "YCOORD": 29.90917,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080230001",
+    "XCOORD": -107.6167,
+    "YCOORD": 30.1129,
+    "VIVIENDAS": 291
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080230002",
+    "XCOORD": -107.5979,
+    "YCOORD": 30.0431,
+    "VIVIENDAS": 100
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300040228",
+    "XCOORD": -107.61209,
+    "YCOORD": 30.05141,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080230005",
+    "XCOORD": -107.5686,
+    "YCOORD": 30.0121,
+    "VIVIENDAS": 624
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300060181",
+    "XCOORD": -107.66196,
+    "YCOORD": 30.29739,
+    "VIVIENDAS": 12
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300290228",
+    "XCOORD": -107.61964,
+    "YCOORD": 30.17859,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300330228",
+    "XCOORD": -107.62946,
+    "YCOORD": 30.12336,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080230037",
+    "XCOORD": -107.5533,
+    "YCOORD": 29.9927,
+    "VIVIENDAS": 731
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300430228",
+    "XCOORD": -107.71807,
+    "YCOORD": 30.25972,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300680228",
+    "XCOORD": -107.65083,
+    "YCOORD": 30.08275,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300710228",
+    "XCOORD": -107.65341,
+    "YCOORD": 30.07557,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300720228",
+    "XCOORD": -107.50592,
+    "YCOORD": 30.11367,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300870228",
+    "XCOORD": -107.54625,
+    "YCOORD": 30.00081,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300890177",
+    "XCOORD": -107.7026,
+    "YCOORD": 30.26491,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300910228",
+    "XCOORD": -107.59915,
+    "YCOORD": 30.02775,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300920228",
+    "XCOORD": -107.65093,
+    "YCOORD": 30.09433,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802300950228",
+    "XCOORD": -107.62284,
+    "YCOORD": 29.97936,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080230096",
+    "XCOORD": -107.585,
+    "YCOORD": 29.9806,
+    "VIVIENDAS": 13
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301020228",
+    "XCOORD": -107.69382,
+    "YCOORD": 30.1971,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301030228",
+    "XCOORD": -107.6957,
+    "YCOORD": 30.2367,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301040228",
+    "XCOORD": -107.72214,
+    "YCOORD": 30.23751,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301050228",
+    "XCOORD": -107.71956,
+    "YCOORD": 30.17878,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301070228",
+    "XCOORD": -107.6161,
+    "YCOORD": 30.0516,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301080228",
+    "XCOORD": -107.61468,
+    "YCOORD": 29.99387,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301090228",
+    "XCOORD": -107.61478,
+    "YCOORD": 29.97722,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301210232",
+    "XCOORD": -107.60201,
+    "YCOORD": 29.96966,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301220232",
+    "XCOORD": -107.5578,
+    "YCOORD": 29.96209,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080230124",
+    "XCOORD": -107.7511,
+    "YCOORD": 30.0398,
+    "VIVIENDAS": 12
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "080230127",
+    "XCOORD": -107.6538,
+    "YCOORD": 30.1326,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301290228",
+    "XCOORD": -107.61142,
+    "YCOORD": 30.04902,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301300228",
+    "XCOORD": -107.57809,
+    "YCOORD": 29.99593,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301310228",
+    "XCOORD": -107.7,
+    "YCOORD": 30.255,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301370228",
+    "XCOORD": -107.62533,
+    "YCOORD": 30.14383,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301450228",
+    "XCOORD": -107.61803,
+    "YCOORD": 30.07033,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301470228",
+    "XCOORD": -107.65571,
+    "YCOORD": 30.06371,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301510228",
+    "XCOORD": -107.58434,
+    "YCOORD": 30.014,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301580228",
+    "XCOORD": -107.67722,
+    "YCOORD": 30.01111,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301640228",
+    "XCOORD": -107.67762,
+    "YCOORD": 30.01322,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301710228",
+    "XCOORD": -107.5805,
+    "YCOORD": 30.00034,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301790228",
+    "XCOORD": -107.63119,
+    "YCOORD": 30.08864,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301810228",
+    "XCOORD": -107.55125,
+    "YCOORD": 30.0114,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301820228",
+    "XCOORD": -107.5233,
+    "YCOORD": 30.03433,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301830228",
+    "XCOORD": -107.59568,
+    "YCOORD": 30.00804,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301840228",
+    "XCOORD": -107.58664,
+    "YCOORD": 29.99001,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301850228",
+    "XCOORD": -107.60124,
+    "YCOORD": 29.9811,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301860228",
+    "XCOORD": -107.62747,
+    "YCOORD": 30.07984,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301880232",
+    "XCOORD": -107.54297,
+    "YCOORD": 29.97387,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301890232",
+    "XCOORD": -107.53676,
+    "YCOORD": 29.97085,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301910232",
+    "XCOORD": -107.52612,
+    "YCOORD": 29.97037,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301920232",
+    "XCOORD": -107.53045,
+    "YCOORD": 29.96173,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301930232",
+    "XCOORD": -107.58274,
+    "YCOORD": 29.9767,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301960232",
+    "XCOORD": -107.58264,
+    "YCOORD": 29.97267,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802301970228",
+    "XCOORD": -107.7176,
+    "YCOORD": 30.06398,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802302000228",
+    "XCOORD": -107.6201,
+    "YCOORD": 30.06185,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802302010228",
+    "XCOORD": -107.64049,
+    "YCOORD": 30.04178,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802302020228",
+    "XCOORD": -107.67343,
+    "YCOORD": 30.06769,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213100",
+    "LOCALIDAD": "0802302030228",
+    "XCOORD": -107.66342,
+    "YCOORD": 29.98145,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010001",
+    "XCOORD": -106.5124,
+    "YCOORD": 30.6177,
+    "VIVIENDAS": 2501
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800100112509",
+    "XCOORD": -106.19223,
+    "YCOORD": 30.48353,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010014",
+    "XCOORD": -106.3449,
+    "YCOORD": 30.7145,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010032227A",
+    "XCOORD": -105.98751,
+    "YCOORD": 30.58211,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800100551962",
+    "XCOORD": -106.45288,
+    "YCOORD": 30.82777,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010064",
+    "XCOORD": -106.4355,
+    "YCOORD": 30.1967,
+    "VIVIENDAS": 37
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800100972725",
+    "XCOORD": -106.45058,
+    "YCOORD": 30.1606,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800101162903",
+    "XCOORD": -106.24303,
+    "YCOORD": 29.95581,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800101192621",
+    "XCOORD": -105.60204,
+    "YCOORD": 30.38028,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010124",
+    "XCOORD": -106.2012,
+    "YCOORD": 30.1483,
+    "VIVIENDAS": 15
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010136",
+    "XCOORD": -106.3879,
+    "YCOORD": 29.8228,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800101793028",
+    "XCOORD": -106.01441,
+    "YCOORD": 29.84979,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800101982496",
+    "XCOORD": -106.33497,
+    "YCOORD": 30.40792,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800102021873",
+    "XCOORD": -106.60405,
+    "YCOORD": 30.93344,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800102081977",
+    "XCOORD": -106.29993,
+    "YCOORD": 30.90465,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800102232706",
+    "XCOORD": -106.47411,
+    "YCOORD": 30.23491,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010226280A",
+    "XCOORD": -105.77995,
+    "YCOORD": 30.25879,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800102531905",
+    "XCOORD": -106.43027,
+    "YCOORD": 30.9369,
+    "VIVIENDAS": 8
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010302234A",
+    "XCOORD": -106.52075,
+    "YCOORD": 30.5933,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800103252710",
+    "XCOORD": -106.41183,
+    "YCOORD": 30.19734,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010379",
+    "XCOORD": -106.5169,
+    "YCOORD": 30.3498,
+    "VIVIENDAS": 12
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800103833066",
+    "XCOORD": -106.35896,
+    "YCOORD": 29.74918,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800103882570",
+    "XCOORD": -106.45538,
+    "YCOORD": 30.32284,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800103912994",
+    "XCOORD": -106.35623,
+    "YCOORD": 29.82455,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800104082797",
+    "XCOORD": -105.82232,
+    "YCOORD": 30.18521,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010415",
+    "XCOORD": -106.2647,
+    "YCOORD": 30.0931,
+    "VIVIENDAS": 12
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800104232354",
+    "XCOORD": -106.45861,
+    "YCOORD": 30.50311,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010448",
+    "XCOORD": -106.3391,
+    "YCOORD": 30.6835,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010471234A",
+    "XCOORD": -106.50168,
+    "YCOORD": 30.61507,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800104822725",
+    "XCOORD": -106.37137,
+    "YCOORD": 30.1389,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010492234A",
+    "XCOORD": -106.50461,
+    "YCOORD": 30.61785,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010501234A",
+    "XCOORD": -106.52222,
+    "YCOORD": 30.65487,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010512",
+    "XCOORD": -106.3917,
+    "YCOORD": 29.9048,
+    "VIVIENDAS": 60
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800105242015",
+    "XCOORD": -106.51784,
+    "YCOORD": 30.84545,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800105632477",
+    "XCOORD": -106.52603,
+    "YCOORD": 30.44249,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800105681939",
+    "XCOORD": -106.44671,
+    "YCOORD": 30.61287,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800105742890",
+    "XCOORD": -106.39534,
+    "YCOORD": 29.90758,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010796",
+    "XCOORD": -106.5598,
+    "YCOORD": 30.3631,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800108091939",
+    "XCOORD": -106.51187,
+    "YCOORD": 30.5889,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010816234A",
+    "XCOORD": -106.51505,
+    "YCOORD": 30.64054,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010818",
+    "XCOORD": -106.5273,
+    "YCOORD": 30.5281,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800108212706",
+    "XCOORD": -106.43942,
+    "YCOORD": 30.18415,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800108553051",
+    "XCOORD": -106.41129,
+    "YCOORD": 29.78376,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800108562405",
+    "XCOORD": -105.78664,
+    "YCOORD": 30.50042,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800108632481",
+    "XCOORD": -106.43375,
+    "YCOORD": 30.41671,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800108682477",
+    "XCOORD": -106.52354,
+    "YCOORD": 30.46906,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800108862015",
+    "XCOORD": -106.47592,
+    "YCOORD": 30.76754,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010896",
+    "XCOORD": -106.0856,
+    "YCOORD": 30.8293,
+    "VIVIENDAS": 9
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800109001939",
+    "XCOORD": -106.47895,
+    "YCOORD": 30.64815,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800109282706",
+    "XCOORD": -106.45689,
+    "YCOORD": 30.17911,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800109322689",
+    "XCOORD": -105.70361,
+    "YCOORD": 30.28273,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800109401962",
+    "XCOORD": -106.45222,
+    "YCOORD": 30.82976,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800109462640",
+    "XCOORD": -106.29626,
+    "YCOORD": 30.28061,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800109652477",
+    "XCOORD": -106.54433,
+    "YCOORD": 30.43249,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080010998",
+    "XCOORD": -106.3738,
+    "YCOORD": 30.0682,
+    "VIVIENDAS": 16
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110053032",
+    "XCOORD": -105.81799,
+    "YCOORD": 29.88546,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110102157",
+    "XCOORD": -106.4921,
+    "YCOORD": 30.67079,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110152369",
+    "XCOORD": -106.23001,
+    "YCOORD": 30.49544,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110252354",
+    "XCOORD": -106.45932,
+    "YCOORD": 30.57162,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011045",
+    "XCOORD": -106.2142,
+    "YCOORD": 29.9631,
+    "VIVIENDAS": 59
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110462354",
+    "XCOORD": -106.44888,
+    "YCOORD": 30.51259,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110491939",
+    "XCOORD": -106.48084,
+    "YCOORD": 30.61853,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110571939",
+    "XCOORD": -106.47384,
+    "YCOORD": 30.60961,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110851939",
+    "XCOORD": -106.49349,
+    "YCOORD": 30.61784,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800110931939",
+    "XCOORD": -106.49413,
+    "YCOORD": 30.60993,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111051939",
+    "XCOORD": -106.48511,
+    "YCOORD": 30.61769,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111092015",
+    "XCOORD": -106.50322,
+    "YCOORD": 30.8129,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111131939",
+    "XCOORD": -106.48422,
+    "YCOORD": 30.61887,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111141939",
+    "XCOORD": -106.4858,
+    "YCOORD": 30.61416,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111211939",
+    "XCOORD": -106.47992,
+    "YCOORD": 30.61841,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111281939",
+    "XCOORD": -106.49432,
+    "YCOORD": 30.61346,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011134",
+    "XCOORD": -106.4881,
+    "YCOORD": 30.6168,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111371939",
+    "XCOORD": -106.47545,
+    "YCOORD": 30.60543,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011140234A",
+    "XCOORD": -106.51578,
+    "YCOORD": 30.63664,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011144",
+    "XCOORD": -106.1947,
+    "YCOORD": 30.6138,
+    "VIVIENDAS": 30
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011147",
+    "XCOORD": -106.1781,
+    "YCOORD": 29.8722,
+    "VIVIENDAS": 24
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011149",
+    "XCOORD": -106.1473,
+    "YCOORD": 29.8382,
+    "VIVIENDAS": 24
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011150",
+    "XCOORD": -106.3153,
+    "YCOORD": 30.1026,
+    "VIVIENDAS": 19
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011151",
+    "XCOORD": -106.2544,
+    "YCOORD": 30.1762,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011152",
+    "XCOORD": -106.2661,
+    "YCOORD": 30.6409,
+    "VIVIENDAS": 8
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111551939",
+    "XCOORD": -106.48972,
+    "YCOORD": 30.62017,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111571939",
+    "XCOORD": -106.41709,
+    "YCOORD": 30.6159,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111582015",
+    "XCOORD": -106.50871,
+    "YCOORD": 30.69061,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111592015",
+    "XCOORD": -106.49971,
+    "YCOORD": 30.70008,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080011171234A",
+    "XCOORD": -106.49199,
+    "YCOORD": 30.6472,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111742833",
+    "XCOORD": -106.38281,
+    "YCOORD": 30.08284,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111752354",
+    "XCOORD": -106.43837,
+    "YCOORD": 30.5389,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111762848",
+    "XCOORD": -106.36328,
+    "YCOORD": 29.99312,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0800111772833",
+    "XCOORD": -106.37686,
+    "YCOORD": 30.02239,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803706123213",
+    "XCOORD": -106.67069,
+    "YCOORD": 31.19585,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080370624",
+    "XCOORD": -106.5328,
+    "YCOORD": 31.365,
+    "VIVIENDAS": 34
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803706253124",
+    "XCOORD": -106.6028,
+    "YCOORD": 31.38608,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080370633",
+    "XCOORD": -106.4769,
+    "YCOORD": 31.3448,
+    "VIVIENDAS": 512
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707053177",
+    "XCOORD": -106.44275,
+    "YCOORD": 31.36871,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707063177",
+    "XCOORD": -106.44532,
+    "YCOORD": 31.36836,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707363105",
+    "XCOORD": -106.76019,
+    "YCOORD": 31.26172,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707483177",
+    "XCOORD": -106.4611,
+    "YCOORD": 31.36644,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707793124",
+    "XCOORD": -106.55371,
+    "YCOORD": 31.30353,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707823177",
+    "XCOORD": -106.46054,
+    "YCOORD": 31.31238,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707873177",
+    "XCOORD": -106.46262,
+    "YCOORD": 31.34464,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707883177",
+    "XCOORD": -106.433,
+    "YCOORD": 31.39175,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707893177",
+    "XCOORD": -106.44059,
+    "YCOORD": 31.38926,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803707903228",
+    "XCOORD": -106.60938,
+    "YCOORD": 31.19582,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803708123177",
+    "XCOORD": -106.4645,
+    "YCOORD": 31.34754,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803708263177",
+    "XCOORD": -106.46525,
+    "YCOORD": 31.33485,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803708583177",
+    "XCOORD": -106.42457,
+    "YCOORD": 31.3723,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803708783177",
+    "XCOORD": -106.43022,
+    "YCOORD": 31.3815,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803708983124",
+    "XCOORD": -106.462,
+    "YCOORD": 31.40938,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803708993124",
+    "XCOORD": -106.46163,
+    "YCOORD": 31.41276,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803709023177",
+    "XCOORD": -106.41946,
+    "YCOORD": 31.3848,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803709473177",
+    "XCOORD": -106.44684,
+    "YCOORD": 31.36099,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803709483177",
+    "XCOORD": -106.45113,
+    "YCOORD": 31.36199,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803709683177",
+    "XCOORD": -106.49844,
+    "YCOORD": 31.34752,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710213177",
+    "XCOORD": -106.5077,
+    "YCOORD": 31.34474,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710463177",
+    "XCOORD": -106.47673,
+    "YCOORD": 31.33179,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710473177",
+    "XCOORD": -106.48083,
+    "YCOORD": 31.32899,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710483177",
+    "XCOORD": -106.50744,
+    "YCOORD": 31.34997,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710503177",
+    "XCOORD": -106.47249,
+    "YCOORD": 31.35766,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710523177",
+    "XCOORD": -106.46996,
+    "YCOORD": 31.35232,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710553177",
+    "XCOORD": -106.46632,
+    "YCOORD": 31.3575,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710603196",
+    "XCOORD": -106.5047,
+    "YCOORD": 31.20282,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710623177",
+    "XCOORD": -106.45534,
+    "YCOORD": 31.36099,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710963177",
+    "XCOORD": -106.50598,
+    "YCOORD": 31.35308,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710983177",
+    "XCOORD": -106.49063,
+    "YCOORD": 31.34435,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803710993177",
+    "XCOORD": -106.4961,
+    "YCOORD": 31.33953,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711003177",
+    "XCOORD": -106.48574,
+    "YCOORD": 31.33782,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711023177",
+    "XCOORD": -106.43537,
+    "YCOORD": 31.36896,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711043124",
+    "XCOORD": -106.5776,
+    "YCOORD": 31.38245,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711063124",
+    "XCOORD": -106.55642,
+    "YCOORD": 31.38068,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711073177",
+    "XCOORD": -106.44478,
+    "YCOORD": 31.37269,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711093177",
+    "XCOORD": -106.51477,
+    "YCOORD": 31.35181,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711103124",
+    "XCOORD": -106.52479,
+    "YCOORD": 31.35418,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711123124",
+    "XCOORD": -106.52342,
+    "YCOORD": 31.35028,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711143177",
+    "XCOORD": -106.47656,
+    "YCOORD": 31.35834,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711573177",
+    "XCOORD": -106.47365,
+    "YCOORD": 31.35976,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711663177",
+    "XCOORD": -106.51196,
+    "YCOORD": 31.35156,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711803177",
+    "XCOORD": -106.49041,
+    "YCOORD": 31.3421,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711813124",
+    "XCOORD": -106.49365,
+    "YCOORD": 31.36912,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803711903124",
+    "XCOORD": -106.42021,
+    "YCOORD": 31.44292,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803712033177",
+    "XCOORD": -106.41045,
+    "YCOORD": 31.37328,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "080371214",
+    "XCOORD": -106.51695,
+    "YCOORD": 31.35022,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213200",
+    "LOCALIDAD": "0803712203177",
+    "XCOORD": -106.41143,
+    "YCOORD": 31.37636,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080100001",
+    "XCOORD": -107.4713,
+    "YCOORD": 29.8434,
+    "VIVIENDAS": 1144
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080100007",
+    "XCOORD": -107.5072,
+    "YCOORD": 29.8946,
+    "VIVIENDAS": 61
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0801004101321",
+    "XCOORD": -107.45156,
+    "YCOORD": 29.87861,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0801004571321",
+    "XCOORD": -107.48134,
+    "YCOORD": 29.8439,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0801005221321",
+    "XCOORD": -107.4419,
+    "YCOORD": 29.89713,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340001",
+    "XCOORD": -107.7642,
+    "YCOORD": 29.6432,
+    "VIVIENDAS": 1223
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340002",
+    "XCOORD": -107.8175,
+    "YCOORD": 29.7196,
+    "VIVIENDAS": 127
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340004",
+    "XCOORD": -107.7983,
+    "YCOORD": 29.6798,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340005",
+    "XCOORD": -107.771,
+    "YCOORD": 29.5062,
+    "VIVIENDAS": 21
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340006",
+    "XCOORD": -107.7858,
+    "YCOORD": 29.8793,
+    "VIVIENDAS": 26
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340009",
+    "XCOORD": -107.8582,
+    "YCOORD": 29.8806,
+    "VIVIENDAS": 46
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340012",
+    "XCOORD": -107.7203,
+    "YCOORD": 29.5368,
+    "VIVIENDAS": 130
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340016",
+    "XCOORD": -107.8038,
+    "YCOORD": 29.7041,
+    "VIVIENDAS": 170
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340017",
+    "XCOORD": -107.678,
+    "YCOORD": 29.6869,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340018",
+    "XCOORD": -107.7227,
+    "YCOORD": 29.5937,
+    "VIVIENDAS": 316
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340022",
+    "XCOORD": -107.8273,
+    "YCOORD": 29.8485,
+    "VIVIENDAS": 15
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340023",
+    "XCOORD": -107.651,
+    "YCOORD": 29.5451,
+    "VIVIENDAS": 37
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340024",
+    "XCOORD": -107.7235,
+    "YCOORD": 29.6271,
+    "VIVIENDAS": 114
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340025",
+    "XCOORD": -107.7782,
+    "YCOORD": 29.6957,
+    "VIVIENDAS": 14
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340026",
+    "XCOORD": -107.7719,
+    "YCOORD": 29.6603,
+    "VIVIENDAS": 6
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340027",
+    "XCOORD": -107.766,
+    "YCOORD": 29.6859,
+    "VIVIENDAS": 38
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340030",
+    "XCOORD": -107.6937,
+    "YCOORD": 29.4518,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340034",
+    "XCOORD": -107.7677,
+    "YCOORD": 29.666,
+    "VIVIENDAS": 76
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340037",
+    "XCOORD": -107.706,
+    "YCOORD": 29.7428,
+    "VIVIENDAS": 22
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340050",
+    "XCOORD": -107.7358,
+    "YCOORD": 29.6768,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0803400630378",
+    "XCOORD": -107.71939,
+    "YCOORD": 29.7953,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "080340086",
+    "XCOORD": -107.882,
+    "YCOORD": 29.5908,
+    "VIVIENDAS": 39
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0803401090397",
+    "XCOORD": -107.80251,
+    "YCOORD": 29.65122,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0803401230397",
+    "XCOORD": -107.7174,
+    "YCOORD": 29.60416,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0803401410397",
+    "XCOORD": -107.84311,
+    "YCOORD": 29.6397,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0803401430397",
+    "XCOORD": -107.72685,
+    "YCOORD": 29.69692,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213300",
+    "LOCALIDAD": "0803401460397",
+    "XCOORD": -107.77011,
+    "YCOORD": 29.6519,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010007",
+    "XCOORD": -106.7957,
+    "YCOORD": 30.3036,
+    "VIVIENDAS": 79
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010020",
+    "XCOORD": -106.6529,
+    "YCOORD": 30.5615,
+    "VIVIENDAS": 32
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800100502547",
+    "XCOORD": -106.76081,
+    "YCOORD": 30.26931,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800100692532",
+    "XCOORD": -106.77806,
+    "YCOORD": 30.27335,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010070",
+    "XCOORD": -106.5498,
+    "YCOORD": 30.4938,
+    "VIVIENDAS": 147
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010079",
+    "XCOORD": -106.8046,
+    "YCOORD": 30.2588,
+    "VIVIENDAS": 40
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010086",
+    "XCOORD": -106.8998,
+    "YCOORD": 30.6046,
+    "VIVIENDAS": 17
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800101102532",
+    "XCOORD": -106.80841,
+    "YCOORD": 30.24304,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010153",
+    "XCOORD": -106.9869,
+    "YCOORD": 30.6707,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800102182000",
+    "XCOORD": -106.88628,
+    "YCOORD": 30.83823,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010276",
+    "XCOORD": -107.125,
+    "YCOORD": 30.3706,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800102902246",
+    "XCOORD": -106.59773,
+    "YCOORD": 30.60321,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010318234A",
+    "XCOORD": -106.59687,
+    "YCOORD": 30.54161,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010351",
+    "XCOORD": -106.8146,
+    "YCOORD": 30.5344,
+    "VIVIENDAS": 89
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010353",
+    "XCOORD": -106.8608,
+    "YCOORD": 30.5579,
+    "VIVIENDAS": 15
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010354",
+    "XCOORD": -106.8582,
+    "YCOORD": 30.5536,
+    "VIVIENDAS": 12
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010361",
+    "XCOORD": -106.7262,
+    "YCOORD": 30.3565,
+    "VIVIENDAS": 5
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010375",
+    "XCOORD": -106.8698,
+    "YCOORD": 30.5706,
+    "VIVIENDAS": 11
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800103872477",
+    "XCOORD": -106.59178,
+    "YCOORD": 30.43587,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800104471939",
+    "XCOORD": -106.66167,
+    "YCOORD": 30.7462,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800104552547",
+    "XCOORD": -106.74138,
+    "YCOORD": 30.28475,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800104572439",
+    "XCOORD": -107.06068,
+    "YCOORD": 30.32757,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010458234A",
+    "XCOORD": -106.53642,
+    "YCOORD": 30.60519,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800105271939",
+    "XCOORD": -106.7596,
+    "YCOORD": 30.75245,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010533234A",
+    "XCOORD": -106.57785,
+    "YCOORD": 30.57396,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010538234A",
+    "XCOORD": -106.53221,
+    "YCOORD": 30.49816,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010555",
+    "XCOORD": -106.5098,
+    "YCOORD": 30.5913,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800107492443",
+    "XCOORD": -106.86218,
+    "YCOORD": 30.30549,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800107671939",
+    "XCOORD": -106.75098,
+    "YCOORD": 30.82943,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800107742477",
+    "XCOORD": -106.58973,
+    "YCOORD": 30.42409,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800109051939",
+    "XCOORD": -106.5447,
+    "YCOORD": 30.61393,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800109252477",
+    "XCOORD": -106.56344,
+    "YCOORD": 30.47614,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080010930234A",
+    "XCOORD": -106.59512,
+    "YCOORD": 30.50973,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800109952087",
+    "XCOORD": -107.05773,
+    "YCOORD": 30.73419,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080011039234A",
+    "XCOORD": -106.5629,
+    "YCOORD": 30.48905,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800110782693",
+    "XCOORD": -106.62869,
+    "YCOORD": 30.21506,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800111612246",
+    "XCOORD": -106.68708,
+    "YCOORD": 30.47939,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800111632246",
+    "XCOORD": -106.60813,
+    "YCOORD": 30.6127,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800111642246",
+    "XCOORD": -106.60317,
+    "YCOORD": 30.61175,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800111652532",
+    "XCOORD": -106.86029,
+    "YCOORD": 30.24665,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800111662532",
+    "XCOORD": -106.82536,
+    "YCOORD": 30.31717,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800111672246",
+    "XCOORD": -106.64602,
+    "YCOORD": 30.56285,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800111682547",
+    "XCOORD": -106.79058,
+    "YCOORD": 30.33812,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0800111702829",
+    "XCOORD": -106.72693,
+    "YCOORD": 29.92389,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100001",
+    "XCOORD": -107.4713,
+    "YCOORD": 29.8434,
+    "VIVIENDAS": 560
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801000021425",
+    "XCOORD": -107.33411,
+    "YCOORD": 29.75795,
+    "VIVIENDAS": 3
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100005",
+    "XCOORD": -106.8845,
+    "YCOORD": 30.15,
+    "VIVIENDAS": 1414
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100016",
+    "XCOORD": -106.9445,
+    "YCOORD": 30.0394,
+    "VIVIENDAS": 25
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801000241410",
+    "XCOORD": -107.39124,
+    "YCOORD": 29.66256,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100026",
+    "XCOORD": -106.9635,
+    "YCOORD": 29.9444,
+    "VIVIENDAS": 595
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100030",
+    "XCOORD": -107.0757,
+    "YCOORD": 29.8132,
+    "VIVIENDAS": 168
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100059",
+    "XCOORD": -106.9236,
+    "YCOORD": 30.0475,
+    "VIVIENDAS": 11
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100082",
+    "XCOORD": -106.7919,
+    "YCOORD": 29.9206,
+    "VIVIENDAS": 516
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100111",
+    "XCOORD": -106.9077,
+    "YCOORD": 30.0756,
+    "VIVIENDAS": 27
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801001291478",
+    "XCOORD": -107.38948,
+    "YCOORD": 29.65397,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801002201552",
+    "XCOORD": -107.29571,
+    "YCOORD": 29.62098,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801002241478",
+    "XCOORD": -107.33111,
+    "YCOORD": 29.67086,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801002421181",
+    "XCOORD": -106.82322,
+    "YCOORD": 30.20403,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801002591285",
+    "XCOORD": -106.86611,
+    "YCOORD": 30.02059,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100268143A",
+    "XCOORD": -107.14111,
+    "YCOORD": 29.71989,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801002811336",
+    "XCOORD": -107.45719,
+    "YCOORD": 29.81112,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801003171285",
+    "XCOORD": -106.9761,
+    "YCOORD": 29.97509,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801003301321",
+    "XCOORD": -107.46507,
+    "YCOORD": 29.83381,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004001285",
+    "XCOORD": -106.97876,
+    "YCOORD": 29.95815,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004151181",
+    "XCOORD": -106.85941,
+    "YCOORD": 30.16845,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004191181",
+    "XCOORD": -106.85493,
+    "YCOORD": 30.14837,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004211181",
+    "XCOORD": -106.89222,
+    "YCOORD": 30.12512,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004261285",
+    "XCOORD": -106.96514,
+    "YCOORD": 29.94781,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100429129A",
+    "XCOORD": -106.80123,
+    "YCOORD": 29.93683,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100431129A",
+    "XCOORD": -106.79552,
+    "YCOORD": 29.93549,
+    "VIVIENDAS": 1
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100442",
+    "XCOORD": -106.8502,
+    "YCOORD": 30.2049,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004431181",
+    "XCOORD": -106.84604,
+    "YCOORD": 30.12738,
+    "VIVIENDAS": 2
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100458129A",
+    "XCOORD": -106.77756,
+    "YCOORD": 29.94684,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100460129A",
+    "XCOORD": -106.75304,
+    "YCOORD": 29.92134,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100464129A",
+    "XCOORD": -106.7879,
+    "YCOORD": 29.96541,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100465129A",
+    "XCOORD": -106.81735,
+    "YCOORD": 29.96125,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "080100466129A",
+    "XCOORD": -106.81345,
+    "YCOORD": 29.92435,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004681393",
+    "XCOORD": -106.77878,
+    "YCOORD": 29.87544,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004701321",
+    "XCOORD": -107.45001,
+    "YCOORD": 29.82184,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004731181",
+    "XCOORD": -106.84889,
+    "YCOORD": 30.22316,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004791181",
+    "XCOORD": -106.84103,
+    "YCOORD": 30.17347,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004861181",
+    "XCOORD": -106.8347,
+    "YCOORD": 30.17523,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004961321",
+    "XCOORD": -107.44646,
+    "YCOORD": 29.82155,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801004971181",
+    "XCOORD": -106.90686,
+    "YCOORD": 30.17084,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801005001181",
+    "XCOORD": -106.90235,
+    "YCOORD": 30.15397,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801005011181",
+    "XCOORD": -107.056,
+    "YCOORD": 30.24554,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801005021181",
+    "XCOORD": -106.88995,
+    "YCOORD": 30.20523,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801005041181",
+    "XCOORD": -106.83994,
+    "YCOORD": 30.15877,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801005051181",
+    "XCOORD": -106.87215,
+    "YCOORD": 30.17158,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801005121393",
+    "XCOORD": -106.86332,
+    "YCOORD": 29.8201,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801005141181",
+    "XCOORD": -106.8281,
+    "YCOORD": 30.14983,
+    "VIVIENDAS": 4
+  },
+  {
+    "CLAVE": "CM3_081213400",
+    "LOCALIDAD": "0801005191181",
+    "XCOORD": -106.86785,
+    "YCOORD": 30.19896,
+    "VIVIENDAS": 4
+  }
+
+        ];
+        
+        // Column definitions
+        const claveColumn = "CLAVE";           // Area responsibility code column
+        const localidadColumn = "LOCALIDAD";   // Location name column
+        const lngColumn = "XCOORD";            // X coordinates (longitude)
+        const latColumn = "YCOORD";            // Y coordinates (latitude)
+        const valueColumn = "VIVIENDAS";       // Household count column
+        
+        // =====================================================
+        // MAP FUNCTIONALITY
+        // =====================================================
+        
+        // Initialize the map (centered on Mexico)
+        const map = L.map('map').setView([19.4326, -99.1332], 8);
+        
+        // Add the tile layer (OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+        
+        // Initialize variables
+        let markers;
+        let legend = null;
+        let currentFilteredData = embeddedData; // Keep track of filtered data
+        
+        // DOM elements
+        const responsableSelect = document.getElementById('responsable-select');
+        const colorSelect = document.getElementById('color-select');
+        const maxRadiusInput = document.getElementById('max-radius');
+        const generateBtn = document.getElementById('generate-map');
+        const statusDiv = document.getElementById('status');
+        const filterInfoDiv = document.getElementById('filter-info');
+        const toggleDataBtn = document.getElementById('toggle-data');
+        const dataTableContainer = document.getElementById('data-table-container');
+        const dataTable = document.getElementById('data-table');
+        
+        // Define a custom cluster icon creator function
+        function createCustomClusterIcon(cluster) {
+            // Get the sum of household values in this cluster
+            let totalHouseholds = 0;
+            const markers = cluster.getAllChildMarkers();
+            
+            markers.forEach(marker => {
+                totalHouseholds += marker.householdValue || 0;
+            });
+            
+            // Scale the size based on the total value
+            const radius = Math.min(60, Math.max(20, Math.sqrt(totalHouseholds) / 2));
+            
+            // Get the color from the select element
+            const color = document.getElementById('color-select').value;
+            
+            // Create the HTML for the icon
+            const iconHtml = `
+                <div class="custom-cluster" style="
+                    width: ${radius * 2}px; 
+                    height: ${radius * 2}px; 
+                    background-color: ${color};
+                    font-size: ${Math.max(10, radius / 2)}px;
+                    box-shadow: 0 0 0 4px rgba(0,0,0,0.2);
+                ">
+                    ${totalHouseholds.toLocaleString()}
+                </div>
+            `;
+            
+            return L.divIcon({
+                html: iconHtml,
+                className: '',
+                iconSize: L.point(radius * 2, radius * 2)
+            });
+        }
+        
+        // Create a marker cluster group with custom functionality
+        function createMarkerClusterGroup() {
+            return L.markerClusterGroup({
+                showCoverageOnHover: false,
+                zoomToBoundsOnClick: true,
+                spiderfyOnMaxZoom: true,
+                removeOutsideVisibleBounds: true,
+                iconCreateFunction: createCustomClusterIcon
+            });
+        }
+        
+        // Initialize marker cluster group
+        markers = createMarkerClusterGroup();
+        map.addLayer(markers);
+        
+        // Filter data based on selected responsable
+        function filterData() {
+            const selectedClave = responsableSelect.value;
+            
+            if (selectedClave === "") {
+                // Show all data
+                currentFilteredData = embeddedData;
+                filterInfoDiv.classList.add('hidden');
+            } else {
+                // Filter data by CLAVE
+                currentFilteredData = embeddedData.filter(row => row[claveColumn] === selectedClave);
+                
+                // Show filter information
+                filterInfoDiv.innerHTML = `
+                    <strong>Filtro Aplicado:</strong><br>
+                    Responsable de Área: ${selectedClave}<br>
+                    Localidades mostradas: ${currentFilteredData.length}<br>
+                    Total viviendas: ${currentFilteredData.reduce((sum, row) => sum + (parseFloat(row[valueColumn]) || 0), 0).toLocaleString()}
+                `;
+                filterInfoDiv.classList.remove('hidden');
+            }
+            
+            return currentFilteredData;
+        }
+        
+        // Generate the map with filtered data
+        function generateMap() {
+            const color = colorSelect.value;
+            const maxRadius = parseInt(maxRadiusInput.value) || 30;
+            
+            statusDiv.textContent = 'Generando mapa...';
+            
+            try {
+                // Filter data first
+                const dataToDisplay = filterData();
+                
+                // Clear existing markers
+                map.removeLayer(markers);
+                markers = createMarkerClusterGroup();
+                
+                if (dataToDisplay.length === 0) {
+                    statusDiv.textContent = 'No hay datos para mostrar con el filtro seleccionado.';
+                    map.addLayer(markers);
+                    return;
+                }
+                
+                // Find min and max values for scaling
+                let minValue = Number.MAX_VALUE;
+                let maxValue = Number.MIN_VALUE;
+                let totalHouseholds = 0;
+                
+                dataToDisplay.forEach(row => {
+                    const value = parseFloat(row[valueColumn]);
+                    if (!isNaN(value) && value > 0) {
+                        minValue = Math.min(minValue, value);
+                        maxValue = Math.max(maxValue, value);
+                        totalHouseholds += value;
+                    }
+                });
+                
+                // Function to calculate radius based on value
+                const getRadius = (value) => {
+                    if (isNaN(value) || value <= 0) return 5;
+                    return 5 + ((value - minValue) / (maxValue - minValue)) * (maxRadius - 5);
+                };
+                
+                // Add markers to the map
+                let validPoints = 0;
+                let invalidPoints = 0;
+                
+                dataToDisplay.forEach(row => {
+                    const lat = parseFloat(row[latColumn]);
+                    const lng = parseFloat(row[lngColumn]);
+                    const value = parseFloat(row[valueColumn]);
+                    const localidad = row[localidadColumn] || '';
+                    const clave = row[claveColumn] || '';
+                    
+                    if (!isNaN(lat) && !isNaN(lng) && !isNaN(value) && 
+                        lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+                        
+                        const radius = getRadius(value);
+                        const marker = L.circleMarker([lat, lng], {
+                            radius: radius,
+                            fillColor: color,
+                            color: '#000',
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.7
+                        });
+                        
+                        // Store the household value in the marker for clustering
+                        marker.householdValue = value;
+                        
+                        let popupContent = `<b>${localidad}</b><br>`;
+                        popupContent += `<strong>Responsable de Área:</strong> ${clave}<br>`;
+                        popupContent += `<strong>Coordenadas:</strong> ${lat.toFixed(6)}, ${lng.toFixed(6)}<br>`;
+                        popupContent += `<strong>Viviendas:</strong> ${value.toLocaleString()}`;
+                        
+                        marker.bindPopup(popupContent);
+                        markers.addLayer(marker);
+                        validPoints++;
+                    } else {
+                        invalidPoints++;
+                    }
+                });
+                
+                // Add markers to map
+                map.addLayer(markers);
+                
+                // Fit bounds if we have points
+                if (validPoints > 0) {
+                    map.fitBounds(markers.getBounds(), { padding: [50, 50] });
+                }
+                
+                // Update status
+                const filterText = responsableSelect.value ? ` (filtrado por ${responsableSelect.value})` : '';
+                statusDiv.textContent = `Mapa generado con ${validPoints.toLocaleString()} localidades${filterText}. Total de viviendas: ${Math.round(totalHouseholds).toLocaleString()}. ${invalidPoints > 0 ? `(${invalidPoints} puntos inválidos omitidos)` : ''}`;
+                
+                // Add legend
+                addLegend(minValue, maxValue, maxRadius, color);
+                
+                // Update data table if visible
+                if (!dataTableContainer.classList.contains('hidden')) {
+                    populateDataTable(dataToDisplay);
+                }
+                
+            } catch (error) {
+                statusDiv.textContent = 'Error generando mapa: ' + error.message;
+            }
+        }
+        
+        // Add legend to map
+        function addLegend(minValue, maxValue, maxRadius, color) {
+            // Remove existing legend if any
+            if (legend) {
+                map.removeControl(legend);
+            }
+            
+            legend = L.control({ position: 'bottomright' });
+            
+            legend.onAdd = function() {
+                const div = L.DomUtil.create('div', 'legend');
+                div.innerHTML = `<h4>Viviendas</h4>`;
+                
+                // Calculate legend values
+                const values = [
+                    minValue,
+                    minValue + (maxValue - minValue) * 0.25,
+                    minValue + (maxValue - minValue) * 0.5,
+                    minValue + (maxValue - minValue) * 0.75,
+                    maxValue
+                ];
+                
+                // Create legend circles
+                values.forEach(value => {
+                    const radius = 5 + ((value - minValue) / (maxValue - minValue)) * (maxRadius - 5);
+                    div.innerHTML += `
+                        <div>
+                            <span class="legend-circle" style="width: ${radius * 2}px; height: ${radius * 2}px; background-color: ${color};"></span>
+                            ${Math.round(value).toLocaleString()}
+                        </div>
+                    `;
+                });
+                
+                return div;
+            };
+            
+            legend.addTo(map);
+        }
+        
+        // Populate data table
+        function populateDataTable(dataToShow = currentFilteredData) {
+            // Clear existing table
+            const thead = dataTable.querySelector('thead tr');
+            const tbody = dataTable.querySelector('tbody');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+            
+            // Create header row if data exists
+            if (dataToShow.length > 0) {
+                // Get all column names from first row
+                const columns = Object.keys(dataToShow[0]);
+                
+                // Add headers
+                columns.forEach(column => {
+                    const th = document.createElement('th');
+                    th.textContent = column;
+                    thead.appendChild(th);
+                });
+                
+                // Add data rows
+                dataToShow.forEach(row => {
+                    const tr = document.createElement('tr');
+                    
+                    columns.forEach(column => {
+                        const td = document.createElement('td');
+                        td.textContent = row[column];
+                        tr.appendChild(td);
+                    });
+                    
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+        
+        // Event Listeners
+        
+        // Toggle data table visibility
+        toggleDataBtn.addEventListener('click', function() {
+            dataTableContainer.classList.toggle('hidden');
+            if (!dataTableContainer.classList.contains('hidden')) {
+                populateDataTable();
+            }
+        });
+        
+        // Generate map button click handler
+        generateBtn.addEventListener('click', generateMap);
+        
+        // Color select change handler
+        colorSelect.addEventListener('change', generateMap);
+        
+        // Responsable select change handler
+        responsableSelect.addEventListener('change', generateMap);
+        
+        // Max radius change handler
+        maxRadiusInput.addEventListener('change', generateMap);
+        
+        // Generate map on page load
+        window.onload = function() {
+            generateMap();
+        };
+    </script>
+</body>
+</html>
